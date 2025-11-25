@@ -4,7 +4,9 @@ import { getDB } from "../config/db.js";
 // get all products
 export const getAllProduct = async (req, res) => {
   try {
+    /** @type {import("mongodb").Db} */
     const db = getDB();
+
     const products = await db.collection("products").find().toArray();
     res.status(200).json(products);
   } catch (err) {
@@ -12,11 +14,29 @@ export const getAllProduct = async (req, res) => {
   }
 };
 
-// get latest 8 products
-export const getLatestProducts = async (req,res) => {
+// find by email
+export const getMyProduct = async (req, res) => {
   try {
     const db = getDB();
-    const data = await db.collection("products").find().sort({_id: -1}).limit(8).toArray();
+    const { email } = req.query;
+    const data = await db.collection("products").find({ email }).toArray();
+
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: "failed to fetching product", err });
+  }
+};
+
+// get latest 8 products
+export const getLatestProducts = async (req, res) => {
+  try {
+    const db = getDB();
+    const data = await db
+      .collection("products")
+      .find()
+      .sort({ _id: -1 })
+      .limit(8)
+      .toArray();
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ message: "Error fetching products", err });
@@ -38,7 +58,6 @@ export const createSingleProduct = async (req, res) => {
 // get single product
 export const getSingleProduct = async (req, res) => {
   try {
-    /** @type {import("mongodb").Db} */
     const db = getDB();
     const { id } = req.params;
     const query = { _id: new ObjectId(id) };
@@ -46,5 +65,19 @@ export const getSingleProduct = async (req, res) => {
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json({ message: "Error Product fetching...", err });
+  }
+};
+
+// delete single product
+export const deleteSingleProduct = async (req, res) => {
+  try {
+    /** @type {import("mongodb").Db} */
+    const db = getDB();
+    const { id } = req.params;
+    const query = { _id: new ObjectId(id) };
+    const data = await db.collection("products").deleteOne(query);
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(500).json({ message: "Error product deletion", err });
   }
 };
