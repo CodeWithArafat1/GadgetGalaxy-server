@@ -1,8 +1,11 @@
 import express from "express";
 import {
+  createCartProduct,
   createSingleProduct,
+  deleteSingleCart,
   deleteSingleProduct,
   getAllProduct,
+  getCartProducts,
   getLatestProducts,
   getMyProduct,
   getSingleProduct,
@@ -13,7 +16,16 @@ const router = express.Router();
 router.get("/", getAllProduct);
 
 // get my product
-router.get('/myProducts', getMyProduct)
+router.get("/myProducts", getMyProduct);
+
+// get all cart products
+router.get("/myCart", getCartProducts);
+
+// create cart product
+router.post("/myCart", createCartProduct);
+
+// delete single cart product
+router.delete('/myCart/:id', deleteSingleCart)
 
 // get latest products
 router.get("/latest", getLatestProducts);
@@ -26,6 +38,5 @@ router.get("/:id", getSingleProduct);
 
 // delete single product
 router.delete("/:id", deleteSingleProduct);
-
 
 export default router;
